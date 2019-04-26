@@ -14,6 +14,10 @@ the watched to check for changes at some frequency, and update the files.
 
 import errno
 import os
+if os.name == 'nt':
+    from os.path import expanduser
+else:
+    import pwd
 import tempfile
 import json
 import io
@@ -31,6 +35,8 @@ from watchme.logger import bot
 def get_userhome():
     '''get the user home based on the effective uid
     '''
+    if os.name == 'nt':
+        return expanduser('~')
     return os.path.expanduser("~")
 
 def get_user():
@@ -62,14 +68,14 @@ def mkdir_p(path):
 
 def generate_temporary_file(folder=None, prefix='watchme', ext=None):
     '''write a temporary file, in base directory with a particular extension.
-      
+
        Parameters
        ==========
-       folder: the base directory to write in. 
+       folder: the base directory to write in.
        prefix: the prefix to use
        ext: the extension to use.
 
-    '''        
+    '''
     if folder == None:
         folder = tempfile.gettempdir()
     tmp = next(tempfile._get_candidate_names())
@@ -88,7 +94,7 @@ def get_tmpdir(prefix="", create=True):
 
        Parameters
        ==========
-       prefix: Given a need for a sandbox (or similar), we will need to 
+       prefix: Given a need for a sandbox (or similar), we will need to
        create a subfolder *within* the SREGISTRY_TMPDIR.
        create: boolean to determine if we should create folder (True)
     '''
@@ -123,7 +129,7 @@ def write_file(filename, content, mode="w"):
 
 def write_json(json_obj, filename, mode="w", print_pretty=True):
     ''' write_json will (optionally,pretty print) a json object to file
-    
+
         Parameters
         ==========
         json_obj: the dict to print to json
